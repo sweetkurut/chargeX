@@ -1,5 +1,4 @@
-import { ChargingStation, ChargingSession, Notification } from '@/types';
-
+import { ChargingSession, ChargingStation, Notification } from "@/types";
 
 export const mockStations: ChargingStation[] = [
   {
@@ -101,6 +100,49 @@ export const mockChargingHistory: ChargingSession[] = [
     endTime: "2024-01-12T16:45:00Z",
     energyConsumed: 53.2,
     cost: 750.4,
-    status: 'active',
+    status: "active",
+  },
+];
+
+export const mockNotifications: Notification[] = [
+  {
+    id: "1",
+    title: "Новое уведомление",
+    message: "Текст уведомления 1",
+    timestamp: "2024-01-15T10:30:00Z",
+    isRead: false,
+    type: "charging_complete",
+  },
+  {
+    id: "2",
+    title: "Новое уведомление",
+    message: "Текст уведомления 2",
+    timestamp: "2024-01-12T14:20:00Z",
+    isRead: false,
+    type: "charging_complete",
+  },
+  {
+    id: "3",
+    title: "Новое уведомление",
+    message: "Текст уведомления 3",
+    timestamp: "2024-01-10T09:15:00Z",
+    isRead: true,
+    type: "charging_complete",
+  },
+  {
+    id: "4",
+    title: "Новое уведомление",
+    message: "Текст уведомления 4",
+    timestamp: "2024-01-08T16:45:00Z",
+    isRead: true,
+    type: "charging_complete",
+  },
+  {
+    id: "5",
+    title: "Новое уведомление",
+    message: "Текст уведомления 5",
+    timestamp: "2024-01-05T11:30:00Z",
+    isRead: true,
+    type: "charging_complete",
   },
 ];
