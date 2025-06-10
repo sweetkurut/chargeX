@@ -3,6 +3,7 @@ import StationCard from "@/components/stations/StationsCard";
 import { mockStations } from "@/services/mockData";
 // import { setStations } from "@/store/slices/stationsSlice";
 import { ChargingStation } from "@/types";
+import { router } from "expo-router";
 import { MapPin } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -53,7 +54,7 @@ export default function StationsScreen() {
 
     const handleStationPress = (station: ChargingStation) => {
         // Пока роутер не используется — можно закомментировать
-        // router.push(`/station/${station.id}`);
+        router.push(`/station/${station.id}`);
         console.log("Выбрана станция:", station.name);
     };
 

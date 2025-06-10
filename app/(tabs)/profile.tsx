@@ -2,10 +2,10 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import { RootState } from "@/store";
-import { logout, updateUser } from "@/store/slices/authSlice";
+// import { logout, updateUser } from "@/store/slices/authSlice";
 import { secureStorage, storage } from "@/utils/storage";
 import { router } from "expo-router";
-import { Bell, Car, ChevronRight, CreditCard, History, LogOut, Phone, User } from "lucide-react-native";
+import { Bell, ChevronRight, CreditCard, History, LogOut, Phone, User } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -107,13 +107,6 @@ export default function ProfileScreen() {
                             <Input label="Имя" value={name} onChangeText={setName} placeholder="Введите ваше имя" />
 
                             <Input
-                                label="Номер автомобиля"
-                                value={carNumber}
-                                onChangeText={setCarNumber}
-                                placeholder="01KG123ABC"
-                                autoCapitalize="characters"
-                            />
-                            <Input
                                 label="Номер телефона"
                                 value={phoneNumber}
                                 onChangeText={setPhoneNumber}
@@ -139,7 +132,7 @@ export default function ProfileScreen() {
                     ) : (
                         <View style={styles.profileInfo}>
                             {/* <Text style={styles.userName}>{name || "Не указано"}</Text> */}
-                            <Text style={styles.userName}>Айбек Уланов</Text>
+                            <Text style={styles.userName}>Иван Иванов</Text>
 
                             <View style={styles.infoRow}>
                                 <Phone size={16} color="#6B7280" />
@@ -147,16 +140,7 @@ export default function ProfileScreen() {
                                 <Text style={styles.infoText}>+996 552 220 790</Text>
                             </View>
 
-                            <View style={styles.infoRow}>
-                                <Car size={16} color="#6B7280" />
-                                {/* <Text style={styles.infoText}>{carNumber || "Не указан"}</Text> */}
-                                <Text style={styles.infoText}>08KG463BIR</Text>
-                            </View>
-
                             <Button title="Редактировать" onPress={() => setIsEditing(true)} style={styles.editButton} />
-                            {/* <TouchableOpacity>
-                <Text>Редактировать</Text>
-              </TouchableOpacity> */}
                         </View>
                     )}
                 </Card>
