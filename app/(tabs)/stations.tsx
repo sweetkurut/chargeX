@@ -1,5 +1,6 @@
 // import StationCard from "@/components/stations/StationCard";
 import StationCard from "@/components/stations/StationsCard";
+import { useTheme } from "@/constants/ThemeContext";
 import { mockStations } from "@/services/mockData";
 // import { setStations } from "@/store/slices/stationsSlice";
 import { ChargingStation } from "@/types";
@@ -12,6 +13,7 @@ type SortOption = "distance" | "price" | "power" | "name";
 type FilterOption = "all" | "available" | "occupied" | "maintenance";
 
 export default function StationsScreen() {
+    const { theme } = useTheme(); // используем текущую тему
     const [stations, setStations] = useState<ChargingStation[]>([]);
     const [sortBy, setSortBy] = useState<SortOption>("distance");
     const [filterBy, setFilterBy] = useState<FilterOption>("all");
@@ -23,7 +25,6 @@ export default function StationsScreen() {
 
     const loadStations = () => {
         setIsLoading(true);
-        // клонируем чтобы избежать мутации
         const clonedStations = mockStations.map((station) => ({ ...station }));
         setStations(clonedStations);
         setIsLoading(false);
@@ -53,7 +54,6 @@ export default function StationsScreen() {
     };
 
     const handleStationPress = (station: ChargingStation) => {
-        // Пока роутер не используется — можно закомментировать
         router.push(`/station/${station.id}`);
         console.log("Выбрана станция:", station.name);
     };
@@ -65,44 +65,77 @@ export default function StationsScreen() {
     const renderSortButton = (option: SortOption, label: string) => (
         <TouchableOpacity
             key={option}
-            style={[styles.sortButton, sortBy === option && styles.sortButtonActive]}
+            style={[
+                styles.sortButton,
+                {
+                    backgroundColor: sortBy === option ? theme.tint : theme.background,
+                    borderColor: sortBy === option ? theme.tint : "#E5E7EB",
+                },
+            ]}
             onPress={() => setSortBy(option)}
         >
-            <Text style={[styles.sortButtonText, sortBy === option && styles.sortButtonTextActive]}>{label}</Text>
+            <Text
+                style={[styles.sortButtonText, { color: sortBy === option ? theme.background : theme.text }]}
+            >
+                {label}
+            </Text>
         </TouchableOpacity>
     );
 
     const renderFilterButton = (option: FilterOption, label: string) => (
         <TouchableOpacity
             key={option}
-            style={[styles.filterButton, filterBy === option && styles.filterButtonActive]}
+            style={[
+                styles.filterButton,
+                {
+                    backgroundColor: filterBy === option ? theme.tint : theme.background,
+                    borderColor: filterBy === option ? theme.tint : "#E5E7EB",
+                },
+            ]}
             onPress={() => setFilterBy(option)}
         >
-            <Text style={[styles.filterButtonText, filterBy === option && styles.filterButtonTextActive]}>{label}</Text>
+            <Text
+                style={[
+                    styles.filterButtonText,
+                    { color: filterBy === option ? theme.background : theme.text },
+                ]}
+            >
+                {label}
+            </Text>
         </TouchableOpacity>
     );
 
     const filteredStations = getFilteredAndSortedStations();
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+            <View
+                style={[styles.header, { backgroundColor: theme.background, borderBottomColor: theme.icon }]}
+            >
                 <View>
-                    <Text style={styles.headerTitle}>Станции</Text>
-                    <Text style={styles.headerSubtitle}>
+                    <Text style={[styles.headerTitle, { color: theme.text }]}>Станции</Text>
+                    <Text style={[styles.headerSubtitle, { color: theme.icon }]}>
                         {filteredStations.length} из {stations.length} станций
                     </Text>
                 </View>
 
-                <TouchableOpacity style={styles.mapButton} onPress={() => console.log("Переход на карту")}>
-                    <MapPin size={20} color="#10B981" />
-                    <Text style={styles.mapButtonText}>Карта</Text>
+                <TouchableOpacity
+                    style={[styles.mapButton, { backgroundColor: theme.background, borderColor: theme.tint }]}
+                    onPress={() => console.log("Переход на карту")}
+                >
+                    <MapPin size={20} color={theme.tint} />
+                    <Text style={[styles.mapButtonText, { color: theme.tint }]}>Карта</Text>
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.controls}>
+            <View
+                style={[
+                    styles.controls,
+                    { backgroundColor: theme.background, borderBottomColor: theme.icon },
+                ]}
+            >
                 <View style={styles.sortContainer}>
-                    <Text style={styles.controlLabel}>Сортировка:</Text>
+                    <Text style={[styles.controlLabel, { color: theme.text }]}>Сортировка:</Text>
                     <View style={styles.sortButtons}>
                         {renderSortButton("distance", "Расстояние")}
                         {renderSortButton("price", "Цена")}
@@ -112,7 +145,7 @@ export default function StationsScreen() {
                 </View>
 
                 <View style={styles.filterContainer}>
-                    <Text style={styles.controlLabel}>Фильтр:</Text>
+                    <Text style={[styles.controlLabel, { color: theme.text }]}>Фильтр:</Text>
                     <View style={styles.filterButtons}>
                         {renderFilterButton("all", "Все")}
                         {renderFilterButton("available", "Доступно")}
@@ -223,7 +256,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontFamily: "Inter-Medium",
         fontWeight: "500",
-        color: "#6B7280",
+        color: "#000000",
     },
     sortButtonTextActive: {
         color: "#FFFFFF",

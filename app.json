@@ -7,16 +7,17 @@
     "icon": "./assets/images/icon.png",
     "scheme": "chargex",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.devxwc.chargeX"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.devxwc.chargeX"
     },
     "web": {
       "bundler": "metro",
@@ -24,7 +25,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "react-native-maps",
       "expo-router",
       [
         "expo-splash-screen",
@@ -34,7 +34,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-maps"
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,44 +1,23 @@
-import { RootState } from "@/store";
-import { storage } from "@/utils/storage";
-import { Tabs, router } from "expo-router";
+import { useTheme } from "@/constants/ThemeContext";
+import { Tabs } from "expo-router";
 import { Heart, History, List, MapPin, User } from "lucide-react-native";
-import { useEffect } from "react";
+import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
 
 export default function TabLayout() {
-    const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
-    useEffect(() => {
-        checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
-        try {
-            const user = await storage.getItem("user");
-            if (!user) {
-                router.replace("/login");
-            }
-        } catch (error) {
-            router.replace("/login");
-        }
-    };
+    const { theme } = useTheme();
 
     return (
-        <SafeAreaView
-            style={{
-                flex: 1,
-            }}
-        >
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
             <Tabs
                 screenOptions={{
                     headerShown: false,
-                    tabBarActiveTintColor: "#10B981",
-                    tabBarInactiveTintColor: "#6B7280",
+                    tabBarActiveTintColor: theme.tabIconSelected,
+                    tabBarInactiveTintColor: theme.tabIconDefault,
                     tabBarStyle: {
-                        backgroundColor: "#FFFFFF",
+                        backgroundColor: theme.background,
                         borderTopWidth: 1,
-                        borderTopColor: "#E5E7EB",
+                        borderTopColor: theme.background === "#fff" ? "#E5E7EB" : "#2C2C2C",
                         paddingTop: 8,
                         paddingBottom: 8,
                         height: 60,

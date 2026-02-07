@@ -1,6 +1,12 @@
+import { ThemeProvider } from "@/constants/ThemeContext";
 import { useFrameworkReady } from "@/hooks/useFrameworkReady";
 import { store } from "@/store";
-import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from "@expo-google-fonts/inter";
+import {
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+} from "@expo-google-fonts/inter";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -52,7 +58,9 @@ export default function RootLayout() {
     useFrameworkReady();
     return (
         <Provider store={store}>
-            <RootLayoutNav />
+            <ThemeProvider>
+                <RootLayoutNav />
+            </ThemeProvider>
         </Provider>
     );
 }

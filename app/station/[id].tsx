@@ -1,5 +1,7 @@
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import Input from "@/components/ui/Input";
+import { useTheme } from "@/constants/ThemeContext";
 import { RootState } from "@/store";
 import { startCharging, stopCharging } from "@/store/slices/chargingSlice";
 import { addNotification } from "@/store/slices/notificationsSlice";
@@ -9,10 +11,11 @@ import { ChargingSession, Notification } from "@/types";
 import { router, useLocalSearchParams } from "expo-router";
 import { ChevronLeft, Clock, Heart, MapPin, Phone, Plus, Wallet, X, Zap } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function StationDetailScreen() {
+    const { theme } = useTheme();
     const { id } = useLocalSearchParams<{ id: string }>();
     const [elapsedTime, setElapsedTime] = useState(0);
     const [selectedConnector, setSelectedConnector] = useState<number>(1);
@@ -144,38 +147,42 @@ export default function StationDetailScreen() {
             return;
         }
 
-        Alert.alert("Начать зарядку", `Зарядка: ${amount} кВт\nСтоимость: ${cost.toFixed(2)} KGS\nРазъем: ${selectedConn.type}`, [
-            { text: "Отмена", style: "cancel" },
-            {
-                text: "Начать",
-                onPress: () => {
-                    const session: ChargingSession = {
-                        id: Date.now().toString(),
-                        stationId: station.id,
-                        stationName: station.name,
-                        stationAddress: station.address,
-                        startTime: new Date().toISOString(),
-                        energyConsumed: 0,
-                        cost: 0,
-                        status: "active",
-                    };
+        Alert.alert(
+            "Начать зарядку",
+            `Зарядка: ${amount} кВт\nСтоимость: ${cost.toFixed(2)} KGS\nРазъем: ${selectedConn.type}`,
+            [
+                { text: "Отмена", style: "cancel" },
+                {
+                    text: "Начать",
+                    onPress: () => {
+                        const session: ChargingSession = {
+                            id: Date.now().toString(),
+                            stationId: station.id,
+                            stationName: station.name,
+                            stationAddress: station.address,
+                            startTime: new Date().toISOString(),
+                            energyConsumed: 0,
+                            cost: 0,
+                            status: "active",
+                        };
 
-                    dispatch(startCharging(session));
-                    dispatch(updateStationStatus({ id: station.id, status: "occupied" }));
-                    setBalance((prev) => prev - cost);
+                        dispatch(startCharging(session));
+                        dispatch(updateStationStatus({ id: station.id, status: "occupied" }));
+                        setBalance((prev) => prev - cost);
 
-                    const notification: Notification = {
-                        id: Date.now().toString(),
-                        type: "charging_complete",
-                        title: "Зарядка начата",
-                        message: `Зарядка начата на станции ${station.name}`,
-                        timestamp: new Date().toISOString(),
-                        isRead: false,
-                    };
-                    dispatch(addNotification(notification));
+                        const notification: Notification = {
+                            id: Date.now().toString(),
+                            type: "charging_complete",
+                            title: "Зарядка начата",
+                            message: `Зарядка начата на станции ${station.name}`,
+                            timestamp: new Date().toISOString(),
+                            isRead: false,
+                        };
+                        dispatch(addNotification(notification));
+                    },
                 },
-            },
-        ]);
+            ],
+        );
     };
 
     const handleStopCharging = () => {
@@ -224,18 +231,21 @@ export default function StationDetailScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={[styles.header, { backgroundColor: theme.background }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <ChevronLeft size={24} color="#374151" />
+                    <ChevronLeft size={24} color={theme.icon} />
                 </TouchableOpacity>
 
-                <Text style={styles.headerTitle}>Зарядка</Text>
+                <Text style={[styles.headerTitle, { color: theme.text }]}>Зарядка</Text>
 
-                <TouchableOpacity onPress={handleToggleFavorite} style={styles.favoriteButton}>
+                <TouchableOpacity
+                    onPress={handleToggleFavorite}
+                    style={[styles.favoriteButton, { backgroundColor: theme.background }]}
+                >
                     <Heart
                         size={24}
-                        color={station.isFavorite ? "#EF4444" : "#9CA3AF"}
+                        color={station.isFavorite ? "#EF4444" : theme.icon}
                         fill={station.isFavorite ? "#EF4444" : "transparent"}
                     />
                 </TouchableOpacity>
@@ -243,10 +253,10 @@ export default function StationDetailScreen() {
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 {/* Station Info */}
-                <Card style={styles.stationCard}>
+                <Card style={[styles.stationCard, { backgroundColor: theme.background }]}>
                     <View style={styles.stationHeader}>
                         <View style={styles.stationInfo}>
-                            <Text style={styles.stationName}>{station.name}</Text>
+                            <Text style={[styles.stationName, { color: theme.text }]}>{station.name}</Text>
                             <View style={styles.stationBadge}>
                                 <Text style={styles.stationBadgeText}>#525</Text>
                             </View>
@@ -263,7 +273,7 @@ export default function StationDetailScreen() {
                 </Card>
 
                 {/* Connectors */}
-                <Card style={styles.connectorsCard}>
+                <Card style={[styles.connectorsCard, { backgroundColor: theme.background }]}>
                     {connectors.map((connector) => (
                         <TouchableOpacity
                             key={connector.id}
@@ -271,21 +281,29 @@ export default function StationDetailScreen() {
                                 styles.connectorRow,
                                 selectedConnector === connector.id && styles.connectorRowSelected,
                                 connector.status !== "available" && styles.connectorRowDisabled,
+                                { backgroundColor: theme.background },
                             ]}
-                            onPress={() => connector.status === "available" && setSelectedConnector(connector.id)}
+                            onPress={() =>
+                                connector.status === "available" && setSelectedConnector(connector.id)
+                            }
                             disabled={connector.status !== "available"}
                         >
                             <View style={styles.connectorLeft}>
                                 <View style={styles.connectorIcon}>
                                     <Zap size={20} color="#6B7280" />
                                 </View>
-                                <Text style={styles.connectorText}>
+                                <Text style={[styles.connectorText, { color: theme.text }]}>
                                     {connector.id} - {connector.type}
                                 </Text>
                             </View>
 
                             <View style={styles.connectorRight}>
-                                <View style={[styles.connectorStatus, { backgroundColor: getStatusColor(connector.status) }]}>
+                                <View
+                                    style={[
+                                        styles.connectorStatus,
+                                        { backgroundColor: getStatusColor(connector.status) },
+                                    ]}
+                                >
                                     <Text style={styles.connectorStatusText}>
                                         {connector.status === "occupied"
                                             ? `Занят ${connector.occupancy}%`
@@ -293,38 +311,47 @@ export default function StationDetailScreen() {
                                     </Text>
                                 </View>
 
-                                <View style={[styles.radioButton, selectedConnector === connector.id && styles.radioButtonSelected]} />
+                                <View
+                                    style={[
+                                        styles.radioButton,
+                                        selectedConnector === connector.id && styles.radioButtonSelected,
+                                    ]}
+                                />
                             </View>
                         </TouchableOpacity>
                     ))}
                 </Card>
 
                 {/* Station Details */}
-                <Card style={styles.detailsCard}>
+                <Card style={[styles.detailsCard, { backgroundColor: theme.background }]}>
                     <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Время работы:</Text>
-                        <Text style={styles.detailValue}>Круглосуточно</Text>
+                        <Text style={[styles.detailValue, { color: theme.text }]}>Круглосуточно</Text>
                     </View>
 
                     <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Тариф:</Text>
-                        <Text style={styles.detailValue}>{station.pricePerKwh} KGS/кВт</Text>
+                        <Text style={[styles.detailValue, { color: theme.text }]}>
+                            {station.pricePerKwh} KGS/кВт
+                        </Text>
                     </View>
 
                     <View style={styles.powerInfo}>
                         <Zap size={24} color="#F59E0B" />
                         <View style={styles.powerText}>
-                            <Text style={styles.powerValue}>{station.power} кВт/ч</Text>
-                            <Text style={styles.powerLabel}>Мощность</Text>
+                            <Text style={[styles.powerValue, { color: theme.text }]}>
+                                {station.power} кВт/ч
+                            </Text>
+                            <Text style={[styles.powerLabel]}>Мощность</Text>
                         </View>
                     </View>
                 </Card>
 
                 {/* Emergency Notice */}
-                <Card style={styles.emergencyCard}>
-                    <Text style={styles.emergencyText}>
-                        Если место для электрозарядки занято автомобилем с ДВС, вы имеете право вызвать эвакуатор позвонив в МВД по
-                        номеру 102.
+                <Card style={[styles.emergencyCard, { backgroundColor: theme.background }]}>
+                    <Text style={[styles.emergencyText, { color: theme.text }]}>
+                        Если место для электрозарядки занято автомобилем с ДВС, вы имеете право вызвать
+                        эвакуатор позвонив в МВД по номеру 102.
                     </Text>
 
                     <TouchableOpacity style={styles.emergencyButton} onPress={handleEmergencyCall}>
@@ -334,14 +361,16 @@ export default function StationDetailScreen() {
                 </Card>
 
                 {/* Balance Section */}
-                <Card style={styles.balanceCard}>
+                <Card style={[styles.balanceCard, { backgroundColor: theme.background }]}>
                     <View style={styles.balanceHeader}>
                         <View style={styles.balanceInfo}>
                             <View style={styles.balanceIcon}>
                                 <Wallet size={20} color="#FFFFFF" />
                             </View>
                             <View>
-                                <Text style={styles.balanceAmount}>{balance.toFixed(2)} KGS</Text>
+                                <Text style={[styles.balanceAmount, { color: theme.text }]}>
+                                    {balance.toFixed(2)} KGS
+                                </Text>
                                 <Text style={styles.balanceLabel}>Баланс</Text>
                             </View>
                         </View>
@@ -354,17 +383,28 @@ export default function StationDetailScreen() {
                 </Card>
 
                 {/* Session Selection */}
-                <Card style={styles.sessionCard}>
-                    <Text style={styles.sessionTitle}>Выберите параметры зарядной сессии или просто нажмите «Начать зарядку»</Text>
+                <Card style={[styles.sessionCard, { backgroundColor: theme.background }]}>
+                    <Text style={[styles.sessionTitle, { color: theme.text }]}>
+                        Выберите параметры зарядной сессии или просто нажмите «Начать зарядку»
+                    </Text>
 
                     <View style={styles.presetButtons}>
                         {presetAmounts.map((amount) => (
                             <TouchableOpacity
                                 key={amount}
-                                style={[styles.presetButton, selectedAmount === amount && styles.presetButtonSelected]}
+                                style={[
+                                    styles.presetButton,
+                                    selectedAmount === amount && styles.presetButtonSelected,
+                                    { backgroundColor: theme.background },
+                                ]}
                                 onPress={() => handleAmountSelect(amount)}
                             >
-                                <Text style={[styles.presetButtonText, selectedAmount === amount && styles.presetButtonTextSelected]}>
+                                <Text
+                                    style={[
+                                        styles.presetButtonText,
+                                        selectedAmount === amount && styles.presetButtonTextSelected,
+                                    ]}
+                                >
                                     {amount} кВт
                                 </Text>
                             </TouchableOpacity>
@@ -372,8 +412,8 @@ export default function StationDetailScreen() {
                     </View>
 
                     <View style={styles.customAmountContainer}>
-                        <TextInput
-                            style={styles.customAmountInput}
+                        <Input
+                            style={[styles.customAmountInput, { backgroundColor: theme.background }]}
                             value={customAmount}
                             onChangeText={handleCustomAmountChange}
                             placeholder="0.00 KGS"
@@ -389,13 +429,15 @@ export default function StationDetailScreen() {
                     <Text style={styles.chargingInfo}>кВт зарядки: {getCurrentAmount()} кВт</Text>
 
                     {getCurrentAmount() > 0 && (
-                        <Text style={styles.costInfo}>Стоимость: {calculateCost(getCurrentAmount()).toFixed(2)} KGS</Text>
+                        <Text style={styles.costInfo}>
+                            Стоимость: {calculateCost(getCurrentAmount()).toFixed(2)} KGS
+                        </Text>
                     )}
                 </Card>
 
                 {/* Active Charging Session */}
                 {isCurrentlyCharging && currentSession && (
-                    <Card style={styles.chargingCard}>
+                    <Card style={[styles.chargingCard, { backgroundColor: theme.background }]}>
                         <Text style={styles.chargingTitle}>Активная зарядка</Text>
 
                         <View style={styles.chargingInfo}>
@@ -406,12 +448,14 @@ export default function StationDetailScreen() {
 
                             <View style={styles.chargingStats}>
                                 <View style={styles.chargingStat}>
-                                    <Text style={styles.chargingStatValue}>{(elapsedTime * (station.power / 3600)).toFixed(1)}</Text>
+                                    <Text style={[styles.chargingStatValue, { color: theme.text }]}>
+                                        {(elapsedTime * (station.power / 3600)).toFixed(1)}
+                                    </Text>
                                     <Text style={styles.chargingStatLabel}>кВт⋅ч</Text>
                                 </View>
 
                                 <View style={styles.chargingStat}>
-                                    <Text style={styles.chargingStatValue}>
+                                    <Text style={[styles.chargingStatValue, { color: theme.text }]}>
                                         {calculateCost(elapsedTime * (station.power / 3600)).toFixed(0)}
                                     </Text>
                                     <Text style={styles.chargingStatLabel}>сом</Text>
@@ -424,7 +468,12 @@ export default function StationDetailScreen() {
                 {/* Action Button */}
                 <View style={styles.actionButtons}>
                     {isCurrentlyCharging ? (
-                        <Button title="Остановить зарядку" variant="danger" onPress={handleStopCharging} style={styles.actionButton} />
+                        <Button
+                            title="Остановить зарядку"
+                            variant="danger"
+                            onPress={handleStopCharging}
+                            style={styles.actionButton}
+                        />
                     ) : (
                         <Button
                             title="Начать зарядку"
@@ -476,6 +525,8 @@ const styles = StyleSheet.create({
     },
     stationCard: {
         marginBottom: 16,
+        borderWidth: 1,
+        borderColor: "#e5e7eb4e",
     },
     stationHeader: {
         flexDirection: "row",
@@ -529,6 +580,9 @@ const styles = StyleSheet.create({
     connectorsCard: {
         marginBottom: 16,
         padding: 0,
+        borderWidth: 1,
+        borderColor: "#e5e7eb4e",
+        overflow: "hidden",
     },
     connectorRow: {
         flexDirection: "row",
@@ -597,6 +651,8 @@ const styles = StyleSheet.create({
     },
     detailsCard: {
         marginBottom: 16,
+        borderWidth: 1,
+        borderColor: "#e5e7eb4e",
     },
     detailRow: {
         flexDirection: "row",
@@ -669,6 +725,9 @@ const styles = StyleSheet.create({
     },
     balanceCard: {
         marginBottom: 16,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: "#e5e7eb4e",
     },
     balanceHeader: {
         flexDirection: "row",
@@ -718,6 +777,8 @@ const styles = StyleSheet.create({
     },
     sessionCard: {
         marginBottom: 16,
+        borderWidth: 1,
+        borderColor: "#e5e7eb4e",
     },
     sessionTitle: {
         fontSize: 14,

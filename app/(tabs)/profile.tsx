@@ -1,9 +1,10 @@
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import { useTheme } from "@/constants/ThemeContext";
 import { RootState } from "@/store";
 // import { logout, updateUser } from "@/store/slices/authSlice";
-import { secureStorage, storage } from "@/utils/storage";
+import { storage } from "@/utils/storage";
 import { router } from "expo-router";
 import { Bell, ChevronRight, CreditCard, History, LogOut, Phone, User } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, Vi
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ProfileScreen() {
+    const { theme } = useTheme();
     const [isEditing, setIsEditing] = useState(false);
     const [name, setName] = useState("");
     const [carNumber, setCarNumber] = useState("");
@@ -50,14 +52,15 @@ export default function ProfileScreen() {
                 text: "Выйти",
                 style: "destructive",
                 onPress: async () => {
-                    try {
-                        await storage.removeItem("user");
-                        await secureStorage.removeItem("authToken");
-                        dispatch(logout());
-                        router.replace("/login");
-                    } catch (error) {
-                        console.log("Logout error:", error);
-                    }
+                    router.replace("/login");
+                    // try {
+                    //     await storage.removeItem("user");
+                    //     await secureStorage.removeItem("authToken");
+                    //     dispatch(logout());
+                    //     router.replace("/login");
+                    // } catch (error) {
+                    //     console.log("Logout error:", error);
+                    // }
                 },
             },
         ]);
@@ -89,13 +92,22 @@ export default function ProfileScreen() {
     ];
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                <View style={styles.header}>
-                    <Text style={styles.headerTitle}>Профиль</Text>
+                <View style={[styles.header, { backgroundColor: theme.background }]}>
+                    <Text
+                        style={[
+                            styles.headerTitle,
+                            {
+                                color: theme.text,
+                            },
+                        ]}
+                    >
+                        Профиль
+                    </Text>
                 </View>
 
-                <Card style={styles.profileCard}>
+                <Card style={[styles.profileCard, { backgroundColor: theme.background }]}>
                     <View style={styles.avatarContainer}>
                         <View style={styles.avatar}>
                             <User size={32} color="#FFFFFF" />
@@ -104,7 +116,12 @@ export default function ProfileScreen() {
 
                     {isEditing ? (
                         <View style={styles.editForm}>
-                            <Input label="Имя" value={name} onChangeText={setName} placeholder="Введите ваше имя" />
+                            <Input
+                                label="Имя"
+                                value={name}
+                                onChangeText={setName}
+                                placeholder="Введите ваше имя"
+                            />
 
                             <Input
                                 label="Номер телефона"
@@ -126,13 +143,26 @@ export default function ProfileScreen() {
                                     style={styles.cancelButton}
                                 />
 
-                                <Button title="Сохранить" onPress={handleSaveProfile} style={styles.saveButton} />
+                                <Button
+                                    title="Сохранить"
+                                    onPress={handleSaveProfile}
+                                    style={styles.saveButton}
+                                />
                             </View>
                         </View>
                     ) : (
                         <View style={styles.profileInfo}>
                             {/* <Text style={styles.userName}>{name || "Не указано"}</Text> */}
-                            <Text style={styles.userName}>Иван Иванов</Text>
+                            <Text
+                                style={[
+                                    styles.userName,
+                                    {
+                                        color: theme.text,
+                                    },
+                                ]}
+                            >
+                                Иван Иванов
+                            </Text>
 
                             <View style={styles.infoRow}>
                                 <Phone size={16} color="#6B7280" />
@@ -140,23 +170,29 @@ export default function ProfileScreen() {
                                 <Text style={styles.infoText}>+996 552 220 790</Text>
                             </View>
 
-                            <Button title="Редактировать" onPress={() => setIsEditing(true)} style={styles.editButton} />
+                            <Button
+                                title="Редактировать"
+                                onPress={() => setIsEditing(true)}
+                                style={styles.editButton}
+                            />
                         </View>
                     )}
                 </Card>
 
-                <View style={styles.menuSection}>
+                <View style={[styles.menuSection, { backgroundColor: theme.background }]}>
                     {menuItems.map((item, index) => (
                         <TouchableOpacity key={index} style={styles.menuItem} onPress={item.onPress}>
-                            <View style={styles.menuItemLeft}>
+                            <View style={[styles.menuItemLeft]}>
                                 <item.icon size={20} color="#374151" />
-                                <Text style={styles.menuItemText}>{item.title}</Text>
+                                <Text style={[styles.menuItemText, { color: theme.text }]}>{item.title}</Text>
                             </View>
 
                             <View style={styles.menuItemRight}>
                                 {item.badge && (
                                     <View style={styles.menuBadge}>
-                                        <Text style={styles.menuBadgeText}>{item.badge > 9 ? "9+" : item.badge}</Text>
+                                        <Text style={styles.menuBadgeText}>
+                                            {item.badge > 9 ? "9+" : item.badge}
+                                        </Text>
                                     </View>
                                 )}
                                 <ChevronRight size={16} color="#9CA3AF" />
@@ -195,6 +231,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         padding: 24,
         marginBottom: 24,
+        borderWidth: 1,
+        borderColor: "#e5e7eb4e",
     },
     avatarContainer: {
         marginBottom: 20,
@@ -254,6 +292,9 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         marginBottom: 24,
         overflow: "hidden",
+        borderWidth: 1,
+        borderColor: "#e5e7eb4e",
+        padding: 10,
     },
     menuItem: {
         flexDirection: "row",
